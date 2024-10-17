@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "scikit-build", "cmake>=3.18", "ninja", "numpy>=1.21"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "molbar"
+version = "1.1.3"
+description = "Molecular Barcode (MolBar): Molecular Identifier for Organic and Inorganic Molecules"
+authors = [
+  {name = "Nils van Staalduinen", email = "van.staalduinen@pc.rwth-aachen.de"},
+  {name = "Christoph Bannwarth", email = "bannwarth@pc.rwth-aachen.de"}
+]
+
+maintainers = [
+  {name = "Nils van Staalduinen", email = "van.staalduinen@pc.rwth-aachen.de"}
+]
+requires-python = ">=3.8"
+dependencies = ["networkx==3.1",
+    "pandas",
+    "scipy",
+    "tqdm",
+    "joblib",
+    "numba",
+    "ase",
+    "dscribe",
+    "numpy>=1.21",
+    "pyyaml"]
+
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["molecular identifier", "chemical data science", "stereoisomerism"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://git.rwth-aachen.de/bannwarthlab/molbar/"
+Documentation = "https://git.rwth-aachen.de/bannwarthlab/molbar/"
+Repository = "https://git.rwth-aachen.de:bannwarthlab/molbar.git"
+Issues = "https://git.rwth-aachen.de/bannwarthlab/molbar/-/issues"
+Changelog = "https://git.rwth-aachen.de/bannwarthlab/molbar/-/issues"
+
+[project.scripts]
+molbar = "molbar.main:main"
+ensplit = "molbar.helper.ensemble_splitter:main"
+princax = "molbar.helper.symcheck:main"
+invstruc = "molbar.helper.invstruc:main"
+fragcount = "molbar.helper.fragcount:main"
+
+[tool.cibuildwheel]
+test-requires = "pytest"
+test-command = "pytest {project}/tests/io/"
+# Specify environment variables
+build = "cp38-* cp39-* cp310-* cp311-* cp312-*"
+#build = "cp310-*"
+skip = "*musllinux*"
+manylinux-x86_64-image = "manylinux2014"

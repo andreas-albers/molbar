@@ -1,0 +1,14 @@
+bond_order_assignment: False  # False if bond order assignment should be skipped
+cycle_detection: True # False if cycle detection should be skipped
+repulsion_charge: 100.0 # Charged used for the Coulomb term, only used for full force field optimization not MolBar. Defaults to 100.0
+
+constraints:
+  angles:
+    - atoms: [19, 23, 35]  # List of atoms involved in the angle
+      value: 45.0  # Angle to which the angle between the three atoms is to be constrained
+    - atoms: [35, 23, 19]  # List of atoms involved in the angle
+      value: 45.0  # Angle to which the angle between the three atoms is to be constrained
+
+  dihedrals:
+    - atoms: [30, 18, 14, 13]  # List of atoms involved in the dihedral
+      value:  90.0  # Actual values for the dihedral parameters

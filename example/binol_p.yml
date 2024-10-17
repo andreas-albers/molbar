@@ -1,0 +1,5 @@
+constraints:
+
+  dihedrals:
+    - atoms: [30, 18, 14, 13]  # List of atoms involved in the dihedral
+      value:  -90.0  # Actual values for the dihedral parameters

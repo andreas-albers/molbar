@@ -1,0 +1,10 @@
+networkx==3.1
+numpy
+pandas
+scipy
+tqdm
+joblib
+numba
+ase
+dscribe
+pyyaml
