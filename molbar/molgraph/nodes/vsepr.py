@@ -185,8 +185,8 @@ class VSEPR:
                 'AX4E0': ['tetrahedral'],
                 'AX4E1': ['trigonal_pyramidal', 'seesaw'], ###
                 'AX4E2': ['square_planar', 'seesaw_rectangular'], ###
-                'AX5': ['trigonal-bipyramidal', 'square_pyramidal'],
-                'AX5E0': ['trigonal-bipyramidal'],
+                'AX5': ['trigonal_bipyramidal', 'square_pyramidal'],
+                'AX5E0': ['trigonal_bipyramidal'],
                 'AX5E1': ['square_pyramidal'],
                 'AX6': ['octahedral', 'pentagonal_pyramidal'],
                 'AX6E0': ['octahedral'],
@@ -198,6 +198,10 @@ class VSEPR:
             }
 
             lone_pairs = math.floor(0.5*(valence_electrons-formal_charge-valence))
+            lone_pairs = int((abs(lone_pairs)+lone_pairs)/2) # in case a negative value is obtained, lone_pairs is set to zero
+
+            ###ToDo: Allow Amine Inversion -> set N to trigonal_planar
+            ###ToDo: Allow Imine Inversion -> set R-N=C to linear_CN2
 
             if len(vsepr_names[f'AX{n_atoms-1}E{lone_pairs}']) == 1:
                 vsepr_class = vsepr_names[f'AX{n_atoms-1}E{lone_pairs}'][0]
@@ -510,17 +514,7 @@ class VSEPR:
         for idx, i in enumerate(non_core_indices):
             for j in non_core_indices[idx:]:
                 if i != j:
-                    try:
-                        valence_angles.append(self._get_bond_angle(coords[core_index,:], coords[i,:], coords[j,:]))
-                    except:
-                        print(coords)
-                        print(core_index)
-                        print(non_core_indices)
-                        print(possible_classes)
-                        print(coords[core_index,:])
-                        print(coords[i,:])
-                        print(coords[j,:])
-                        assert False
+                    valence_angles.append(self._get_bond_angle(coords[core_index,:], coords[i,:], coords[j,:]))
         valence_angles.sort()
         
         sum_of_deviations = {}
@@ -909,6 +903,42 @@ class VSEPR:
 
                 minor_angle = 120.0
 
+        ###ToDo: maybe remove cycle_size > 5 case, to remove planar 6-membered-rings
+        ###ToDo: maybe planarise trigonal_bent atoms in rings:
+
+        # elif (
+        #     central_node_in_cycle
+        #     and n_cycles == 1
+        #     and vsepr_class == "trigonal_bent"
+        #     and len(local_non_cycle_nodes) == 1
+        # ):
+
+        #     final_angles = []
+
+        #     if cycle_size == 3:
+
+        #         major_angle = 150.0
+
+        #         minor_angle = 60.0
+
+        #     elif cycle_size == 4:
+
+        #         major_angle = 135.0
+
+        #         minor_angle = 90.0
+
+        #     elif cycle_size == 5:
+
+        #         major_angle = 126.0
+
+        #         minor_angle = 108.0
+
+        #     else:
+
+        #         major_angle = 120.0
+
+        #         minor_angle = 120.0
+
             global_non_cycle_node = [visible_nodes[i] for i in local_non_cycle_nodes][0]
 
             global_cycle_nodes = [
@@ -985,9 +1015,9 @@ class VSEPR:
 
         if vsepr_class not in [
             "tetrahedral",
+            "trigonal_bent",
             # "seesaw",
             # "seesaw_rectangular",
-            "trigonal_bent",
             "trigonal_planar",
             "square_planar",
             # "formate",
@@ -1008,15 +1038,12 @@ class VSEPR:
         core_index = visible_nodes.index(node)
 
         if vsepr_class == "tetrahedral":
-
             # return self._constrain_pyramidal_dihedral(core_index, visible_nodes)
-
             return self._constrain_squezzed_tetrahedral_dihedral(
                 core_index, adjacent_nodes, visible_nodes
             )
 
         elif vsepr_class == "trigonal_bent":
-
             return self._constrain_pyramidal_dihedral(core_index, visible_nodes)
 
         else:
@@ -1265,7 +1292,7 @@ class VSEPR:
                     },
                 ]
                 self.nodes[core_node]["angle_constraints"] = angle_data
-                self.nodes[core_node]["vsepr_classes"] = "trigonal_pyramidal_squeezed"
+                self.nodes[core_node]["vsepr_classes"] = "trigonal_bent_squeezed"
                 dihedral_nodes = [
                     [
                         cycle_node_indices[0],
