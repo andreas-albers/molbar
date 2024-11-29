@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
         print(geometry)
 
-        Printer(n_atoms, 0.0, geometry, atoms, file).print()
+        # Printer(n_atoms, 0.0, geometry, atoms, file).print()
 
         angles = []
 
@@ -75,6 +75,7 @@ if __name__ == "__main__":
         ideal_geometries[file.replace(".xyz", "")] = {
             "angles": angles,
             "dihedrals": dihedrals,
+            "coords": geometry.tolist(),
         }
 
     with open("../ideal_geometries.json", "w") as f:

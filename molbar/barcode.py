@@ -22,6 +22,7 @@ def get_molbars_from_coordinates(
     list_of_edges=None,
     list_of_bond_orders=None,
     list_of_formal_charges = None,
+    list_of_chirality_settings = None,
     return_data=False,
     threads=1,
     timing=False,
@@ -58,6 +59,8 @@ def get_molbars_from_coordinates(
         list_of_bond_orders = [None] * len(list_of_elements)
     if list_of_formal_charges is None:
         list_of_formal_charges = [None] * len(list_of_elements)
+    if list_of_chirality_settings is None:
+        list_of_chirality_settings = [None] * len(list_of_chirality_settings)
     if isinstance(total_charges, numbers.Integral):
         total_charges = [total_charges] * len(list_of_elements)
     assert len(list_of_elements) == len(
@@ -80,12 +83,13 @@ def get_molbars_from_coordinates(
                 edges=edges,
                 bond_orders=bond_orders,
                 formal_charges=formal_charges,
+                chirality_settings=chirality_settings,
                 single_constraint=copy.deepcopy(single_constraint),
                 debug=return_data,
                 timing=timing,
                 mode=mode,
             )
-            for single_constraint, coord, elem, total_charge, edges, bond_orders, formal_charges in tqdm(
+            for single_constraint, coord, elem, total_charge, edges, bond_orders, formal_charges, chirality_settings in tqdm(
                 zip(
                     input_constraints,
                     list_of_coordinates,
@@ -94,6 +98,7 @@ def get_molbars_from_coordinates(
                     list_of_edges,
                     list_of_bond_orders,
                     list_of_formal_charges,
+                    list_of_chirality_settings,
                 ),
                 total=len(list_of_elements),
                 file=sys.stdout,
@@ -136,6 +141,7 @@ def get_molbar_from_coordinates(
     edges=None,
     bond_orders=None,
     formal_charges = None,
+    chirality_settings = None,
     return_data=False,
     timing=False,
     input_constraint=None,
@@ -166,6 +172,7 @@ def get_molbar_from_coordinates(
         edges=edges,
         bond_orders=bond_orders,
         formal_charges=formal_charges,
+        chirality_settings=chirality_settings,
         single_constraint=input_constraint,
         debug=return_data,
         timing=timing,

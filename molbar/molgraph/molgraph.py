@@ -78,7 +78,7 @@ class MolGraph(
                 **element_data,
             )
 
-    def from_coordinates(self, coordinates: np.ndarray, elements: np.ndarray, edges=None, bond_orders=None, formal_charges=None) -> None:
+    def from_coordinates(self, coordinates: np.ndarray, elements: np.ndarray, edges=None, bond_orders=None, formal_charges=None, chirality_settings=None) -> None:
         """
         Constructs a MolGraph object from coordinates given by np.ndarray and elements given by np.ndarray.
 
@@ -119,6 +119,13 @@ class MolGraph(
             self.add_node_data("formal_charge", formal_charges)
         else:
             self.formal_charges = False
+        default_chirality_settings = {'amine_inversion': True, 'imine_inversion': True, 'ring_planarisation': True, 'ring_hetero_planarisation': True}
+        if chirality_settings is None:
+            self.chirality_settings = default_chirality_settings
+        else:
+            default_chirality_settings.update(chirality_settings)
+            self.chirality_settings = default_chirality_settings
+
 
     def return_n_atoms(self, include_all=False) -> int:
         """

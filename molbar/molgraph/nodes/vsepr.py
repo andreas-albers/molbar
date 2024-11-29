@@ -2,9 +2,9 @@ import os
 import json
 import math
 import numpy as np
-import warnings as warning
+# import warnings as warning
 from ase import Atoms
-from molbar.io.filereader import FileReader
+# from molbar.io.filereader import FileReader
 from dscribe.descriptors import SOAP
 from molbar.helper.vector import Vector
 from scipy.spatial.transform import Rotation
@@ -200,14 +200,26 @@ class VSEPR:
             lone_pairs = math.floor(0.5*(valence_electrons-formal_charge-valence))
             lone_pairs = int((abs(lone_pairs)+lone_pairs)/2) # in case a negative value is obtained, lone_pairs is set to zero
 
-            ###ToDo: Allow Amine Inversion -> set N to trigonal_planar
-            ###ToDo: Allow Imine Inversion -> set R-N=C to linear_CN2
-
             if len(vsepr_names[f'AX{n_atoms-1}E{lone_pairs}']) == 1:
                 vsepr_class = vsepr_names[f'AX{n_atoms-1}E{lone_pairs}'][0]
             else:
                 possible_classes = vsepr_names[f'AX{n_atoms-1}E{lone_pairs}']
                 vsepr_class = self._classify_angle(coordinates, core_index, non_core_indices, possible_classes)
+
+            central_element = elements[core_index]
+
+            # apply chirality settings:
+            if self.chirality_settings['amine_inversion']:
+                if (central_element == "N" and vsepr_class == "trigonal_bent"):
+                    vsepr_class = "trigonal_planar"
+            if self.chirality_settings['ring_hetero_planarisation']:
+                if (is_in_cycle == True and vsepr_class == "trigonal_bent"):
+                    vsepr_class = "trigonal_planar"
+            if self.chirality_settings['imine_inversion']:
+                if (central_element == "N" and is_in_cycle == False and vsepr_class == "bent"):
+                    vsepr_class = "linear_cn2"
+            if not self.chirality_settings['ring_planarisation']:
+                raise ValueError("ring_planarisation == False is not jet supported.")
 
         else:
             # Classify node according to VSEPR theory by comparing SOAP to ideal SOAPs
@@ -741,16 +753,18 @@ class VSEPR:
             ]
         )
 
-        ideal_file_path = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "..",
-            "data",
-            "ideal_geometries",
-            f"{vsepr_class}.xyz",
-        )
+        # ideal_file_path = os.path.join(
+        #     os.path.dirname(__file__),
+        #     "..",
+        #     "..",
+        #     "data",
+        #     "ideal_geometries",
+        #     f"{vsepr_class}.xyz",
+        # )
 
-        _, ideal_coordinates, _ = FileReader(ideal_file_path).read_file()
+        # _, ideal_coordinates, _ = FileReader(ideal_file_path).read_file()
+
+        ideal_coordinates = np.array(self.ideal_geometries[vsepr_class]["coords"])
 
         order = [i for i in range(0, n_atoms) if i != core_index]
 
@@ -903,7 +917,6 @@ class VSEPR:
 
                 minor_angle = 120.0
 
-        ###ToDo: maybe remove cycle_size > 5 case, to remove planar 6-membered-rings
         ###ToDo: maybe planarise trigonal_bent atoms in rings:
 
         # elif (
