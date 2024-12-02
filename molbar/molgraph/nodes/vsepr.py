@@ -200,6 +200,10 @@ class VSEPR:
             lone_pairs = math.floor(0.5*(valence_electrons-formal_charge-valence))
             lone_pairs = int((abs(lone_pairs)+lone_pairs)/2) # in case a negative value is obtained, lone_pairs is set to zero
 
+            # ToDo: Check for aromatic rings: lone pair of hetero atoms in aromatic rings is part of pi-system and does not contribute to VSEPR polyeder.
+            #       This leads to wrong VSEPR structures if ring_hetero_planarisation=False.
+            #       Current Workaround: formal charge of aromatic hetero atoms is raised by 2 by the user, to remove the lone pair from vsepr classification
+
             if len(vsepr_names[f'AX{n_atoms-1}E{lone_pairs}']) == 1:
                 vsepr_class = vsepr_names[f'AX{n_atoms-1}E{lone_pairs}'][0]
             else:
@@ -209,16 +213,16 @@ class VSEPR:
             central_element = elements[core_index]
 
             # apply chirality settings:
-            if self.chirality_settings['amine_inversion']:
+            if self.stereo_settings['amine_inversion']:
                 if (central_element == "N" and vsepr_class == "trigonal_bent"):
                     vsepr_class = "trigonal_planar"
-            if self.chirality_settings['ring_hetero_planarisation']:
+            if self.stereo_settings['ring_hetero_planarisation']:
                 if (is_in_cycle == True and vsepr_class == "trigonal_bent"):
                     vsepr_class = "trigonal_planar"
-            if self.chirality_settings['imine_inversion']:
+            if self.stereo_settings['imine_inversion']:
                 if (central_element == "N" and is_in_cycle == False and vsepr_class == "bent"):
                     vsepr_class = "linear_cn2"
-            if not self.chirality_settings['ring_planarisation']:
+            if not self.stereo_settings['ring_planarisation']:
                 raise ValueError("ring_planarisation == False is not jet supported.")
 
         else:
@@ -916,41 +920,6 @@ class VSEPR:
                 major_angle = 120.0
 
                 minor_angle = 120.0
-
-        ###ToDo: maybe planarise trigonal_bent atoms in rings:
-
-        # elif (
-        #     central_node_in_cycle
-        #     and n_cycles == 1
-        #     and vsepr_class == "trigonal_bent"
-        #     and len(local_non_cycle_nodes) == 1
-        # ):
-
-        #     final_angles = []
-
-        #     if cycle_size == 3:
-
-        #         major_angle = 150.0
-
-        #         minor_angle = 60.0
-
-        #     elif cycle_size == 4:
-
-        #         major_angle = 135.0
-
-        #         minor_angle = 90.0
-
-        #     elif cycle_size == 5:
-
-        #         major_angle = 126.0
-
-        #         minor_angle = 108.0
-
-        #     else:
-
-        #         major_angle = 120.0
-
-        #         minor_angle = 120.0
 
             global_non_cycle_node = [visible_nodes[i] for i in local_non_cycle_nodes][0]
 

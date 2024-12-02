@@ -24,8 +24,8 @@ class BondOrder:
                         bo=2,
                         rigid=True,
                     )
-            if 'tripple' in self.custom_bond_orders:
-                for edge in self.custom_bond_orders['tripple']:
+            if 'triple' in self.custom_bond_orders:
+                for edge in self.custom_bond_orders['triple']:
                     self.add_edge(
                         edge[0],
                         edge[1],

@@ -157,7 +157,7 @@ def _get_molbar_from_molGraph(
     edges=None,
     bond_orders=None,
     formal_charges=None,
-    chirality_settings=None,
+    stereo_settings=None,
     mode="mb",
     single_constraint=None,
     debug=False,
@@ -188,7 +188,7 @@ def _get_molbar_from_molGraph(
         # Read the input file.
         molgraph.from_file(filepath=file)
     else:
-        molgraph.from_coordinates(coordinates=coordinates, elements=elements, edges=edges, bond_orders=bond_orders, formal_charges=formal_charges, chirality_settings=chirality_settings)
+        molgraph.from_coordinates(coordinates=coordinates, elements=elements, edges=edges, bond_orders=bond_orders, formal_charges=formal_charges, stereo_settings=stereo_settings)
     if write_trj and file:
         debug_path = _get_debug_path(file)
         if os.path.isdir(debug_path):

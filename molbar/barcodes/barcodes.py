@@ -65,7 +65,7 @@ def concat_barcode(molgraph: MolGraph) -> str:
     absconfiguration_spectrum_str = _get_rounded_spectrum_as_str(
         molgraph.absconfiguration_spectrum
     )
-    return f"MolBar | {mb_version} | {molecular_formula} | {total_charge} | {topology_spectrum_str} | {heavy_atom_topology_spectrum_str} | {topography_spectrum_str} | {absconfiguration_spectrum_str} "
+    return f"MolBarGG | {mb_version} | {molecular_formula} | {total_charge} | {topology_spectrum_str} | {heavy_atom_topology_spectrum_str} | {topography_spectrum_str} | {absconfiguration_spectrum_str} "
 
 
 def _get_molecular_formular(elements: list) -> str:

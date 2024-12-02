@@ -4,17 +4,28 @@
 Customized version of [MolBar](https://git.rwth-aachen.de/bannwarthlab/molbar) v1.1.3:
 
 * The files ideal_geometries.json, soap.json, and element_data.json are loaded only once per MolGraph constructor call and not multiple times during MolBar calculation, reducing overhead.
-* Custom topology can be passed to `get_molbar_from_coordinates` using the keyword `edges`. This allows to override MolBar's edge detection.
-* Custom bond orders can be passed to `get_molbar_from_coordinates` using the keyword `bond_orders`. This allows to override MolBar's bond order detection, as this fails particularly in the case of hypervalent structures.
+* Custom topology can be passed to `get_molbar_from_coordinates` using the keyword `edges`. This allows to override MolBar's edge detection, which only provides meaningful results for 2c2e bonds.
+* Custom bond orders can be passed to `get_molbar_from_coordinates` using the keyword `bond_orders`. This allows to override MolBar's bond order detection, which only provides meaningful results for 2c2e bonds.
 * Formal charges can be passed to `get_molbar_from_coordinates` using the keyword `formal_charges`, enabeling a more precise VSEPR detection by considering lone pairs.
+* If the custom VSEPR detection is enabled, the keyword `stereo_settings` allows controlling stereochemistry detection. Default settings are:
+  ```python
+  {'amine_inversion': True,
+  'imine_inversion': True,
+  'ring_planarisation': True,
+  'ring_hetero_planarisation': True}
+  ```
+  * `amine_inversion`: planarisation of amines -> amine stereochemistery is ignored
+  * `imine_inversion`: linearisation of imines -> imine stereochemistry is ignored
+  * `ring_planarisation`: ring structures are planarised -> ring sterochemistry is ignored
+  * `ring_hetero_planarisation`: ring atoms with one non-ring atom neighbor are always planarised
 
-As the molecular topology is known in some use cases (e.g. comparison of confomer ensembles of a known structure), the above modifications allow to pass information of the topology to the MolBar software.
+As the molecular topology is known in some use cases (_e.g._ comparison of confomer ensembles of a known structure), the above modifications allow reliable MolBar generation of inorganic compounds.
 
 ```python
  from molbar.barcode import get_molbar_from_coordinates
 ```
 ```python
-  def get_molbar_from_coordinates(coordinates: list, elements: list, edges=None, bond_orders=None, formal_charges=None, return_data=False, timing=False, input_constraint=None, mode="mb") -> Union[str, dict]
+  def get_molbar_from_coordinates(coordinates: list, elements: list, edges=None, bond_orders=None, formal_charges=None, stereo_settings=None, return_data=False, timing=False, input_constraint=None, mode="mb") -> Union[str, dict]
 ```
 Custom Arguments:
 ```
@@ -23,11 +34,14 @@ Custom Arguments:
 ```
 ```
   bond_orders (dict): A dict with bond orders, e.g.:
-  {'single': [[0, 2], [2, 3]], 'double': [[0, 1], [2, 4]], 'tripple': []} 
+  {'single': [[0, 2], [2, 3]], 'double': [[0, 1], [2, 4]], 'triple': []} 
 ```
 ```
   formal_charges (list): A list of formal charges, ordered by atom index, e.g.:
   [-1, 0, 0, 0, 0]
+```
+```
+  stereo_settings (dict): A dict for controlling stereochemistry, e.g.:  {'amine_inversion': True, 'imine_inversion': True, 'ring_planarisation': True, 'ring_hetero_planarisation': True}
 ```
 ```
 Returns:
